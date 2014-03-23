@@ -90,6 +90,8 @@ function Check-Array ([string]$str, [string[]]$patterns) {
 }
 
 #endregion Functions
+
+if ($PSVersionTable) {$Host.Runspace.ThreadOptions = 'ReuseThread'}
  
 $status = 3;
  
