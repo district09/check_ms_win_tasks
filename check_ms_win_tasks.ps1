@@ -1,5 +1,4 @@
-####################################################################################################
-#  Scriptname:   	check_ms_win_tasks.ps1
+﻿#  Scriptname:   	check_ms_win_tasks.ps1
 #  Version:			2.14.3.23b
 #  Created on:    	01/02/2014																			
 #  Author:        	D'Haese Willem
@@ -28,9 +27,7 @@
 #					5) This script works perfectly in our environment. Please try debugging yourself, use Powergui, use breakpoints and test where things 
 #					   go wrong. Every environment is different. It should work, so please only contact me if you are 100 % sure you found a bug.
 #					   The script is highly adaptable if you want different output etc.
-#										
-#
-####################################################################################################
+
 
 param(
 	[Parameter(Mandatory=$true)][string]$ComputerName = "localhost",
