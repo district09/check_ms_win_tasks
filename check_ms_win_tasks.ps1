@@ -6,7 +6,7 @@
 # Purpose:       	Checks Microsoft Windows scheduled tasks excluding defined folders and defined 
 #					task patterns, returning state of tasks with name, author, exit code and 
 #					performance data to Nagios.
-# On Github:		https://github.com/F1regiver/check_ms_win_tasks.ps1
+# On Github:		https://github.com/willemdh/check_ms_win_tasks.ps1
 # To do:			
 #  	- Add switches to change returned values and output
 #  	- Add array parameter with exit codes that should be excluded
