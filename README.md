@@ -2,12 +2,12 @@
 
 ### Idea
 
-Checks Microsoft Windows scheduled tasks excluding defined folders and defined task patterns, returning state of  
+Checks Microsoft Windows scheduled tasks excluding defined folders and defined task patterns, returning state of 
 tasks with name, author, exit code and performance data to Nagios.
 
 ### Status
 
-Production ready. After using this plugin for almost a year now, I can confirm it is working as expected on Windows  
+Production ready. After using this plugin for almost a year now, I can confirm it is working as expected on Windows 
 2008 and Windows 2008 R2.
 
 ### How To
@@ -28,11 +28,11 @@ Production ready. After using this plugin for almost a year now, I can confirm i
 
 ### Help
 
-This script works perfect in our environment on Windows 2008 and Windows 2008 R2 servers for more than a year now.   
-If you do happen to find a bug, please create an issue on GitHub. Please include console's output and reproduction   
-step in your bug report.The script is highly adaptable if you want different output etc. I've been asked a few times  
-to make it multilingual, as obviously this script will only work on English Windows 2008 or higher servers, but as   
-I do not have non-English servers at my disposal, I'm not going to implement any other languages.  
+This script works perfect in our environment on Windows 2008 and Windows 2008 R2 servers for more than a year now. 
+If you do happen to find a bug, please create an issue on GitHub. Please include console's output and reproduction 
+step in your bug report.The script is highly adaptable if you want different output etc. I've been asked a few times 
+to make it multilingual, as obviously this script will only work on English Windows 2008 or higher servers, but as 
+I do not have non-English servers at my disposal, I'm not going to implement any other languages. 
 
 ### On Nagios Exchange
 
@@ -55,8 +55,8 @@ http://exchange.nagios.org/directory/Plugins/Operating-Systems/Windows/NRPE/Chec
 08/09/2014 => Cleaned code and updated documentation  
 
 ### Copyright:
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public  
-License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later  
-version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the  
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more  
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later 
+version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
 details at <http://www.gnu.org/licenses/>.
