@@ -8,23 +8,19 @@ tasks with name, author, exit code and performance data to Nagios.
 ### Status
 
 Production ready. After using this plugin for almost a year now, I can confirm it is working as expected on Windows 
-2008 and Windows 2008 R2.
+2008 and Windows 2008 R2. Please visit http://outsideit.net/nagios-plugins/monitoring-scheduled-tasks/ for more information.
 
 ### How To
 
 1) Put the script in the NSCP scripts folder  
 2) In the nsclient.ini configuration file, define the script like this:  
-	check_ms_win_tasks=cmd /c echo scripts\check_ms_win_tasks.ps1 $ARG1$ $ARG2$ $ARG3$; exit $LastExitCode | powershell.exe -command -  
+	check_ms_win_tasks=cmd /c echo scripts\check_ms_win_tasks.ps1 $ARG1$; exit $LastExitCode | powershell.exe -command -  
 3) Make a command in Nagios like this:  
-	check_ms_win_tasks => $USER1$/check_nrpe -H $HOSTADDRESS$ -p 5666 -t 60 -c check_ms_win_tasks -a $ARG1$ $ARG2$ $ARG3$  
+	check_ms_win_tasks => $USER1$/check_nrpe -H $HOSTADDRESS$ -p 5666 -t 60 -c check_ms_win_tasks -a $ARG1$  
 4) Configure your service in Nagios:  
 	- Make use of the above created command  
-	- Parameter 1 should be 'localhost' (did not test with remoting)  
-	- Parameter 2 should be an array of folders to exclude, example 'Microsoft, Backup'  
-	- Parameter 3 should be an array of task patterns to exclude, example 'Jeff,"Copy Test"'  
-	- All single quotes need to be included (In Nagios XI)  
-	- Array values with spaces need double quotes (see above example)  
-	- Parameters are no longer mandatory. If not used, default values in TaskStruct will be used.  
+	- Make sure you pass at least one argument
+	- Example: '-H localhost -EF Microsoft, Backup_Maintenance -ET Jeff, Fimacs'
 
 ### Help
 
@@ -49,7 +45,7 @@ http://exchange.nagios.org/directory/Plugins/Operating-Systems/Windows/NRPE/Chec
 11/04/2014 => New output format with outputstring to be able to see failed tasks in service history  
 11/04/2014 => Added [int] to prevent decimal numbers  
 24/04/2014 => Used ' -> ' to split failed and running tasks  
-05/05/2014 => Test script fro better handling and checking of parameters, does not work yet...  
+05/05/2014 => Test script for better handling and checking of parameters
 18/08/2014 => Made parameters non mandatory, working with TaskStruct object  
 20/08/2014 => Solved bugs with -h or --help not displaying help and cleaned up some code  
 08/09/2014 => Cleaned code and updated documentation  

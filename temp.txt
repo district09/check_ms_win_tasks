@@ -1,0 +1,3 @@
+$USER1$/check_nrpe -H $HOSTADDRESS$ -p 5666 -t 60 -c check_ms_win_tasks -a $ARG1$
+
+'-H localhost -EF Microsoft, Backup_Maintenance, F5, EHRM, OG_WZD -ET Jeff, Fimacs'
