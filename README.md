@@ -2,8 +2,8 @@
 
 ### Idea
 
-Checks Microsoft Windows 2008 or higher scheduled tasks excluding defined folders and defined task patterns, returning state of 
-tasks with name, author, exit code and performance data to Nagios.
+Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks  
+with name, author, exit code and performance data to Nagios.
 
 ### Status
 
@@ -11,7 +11,7 @@ Production ready.
 
 ### How To
 
-Please check http://outsideit.net/check_ms_win_tasks for more information on how to use this plugin.
+Please check http://outsideit.net/check-ms-win-tasks for more information on how to use this plugin.
 
 ### Help
 
