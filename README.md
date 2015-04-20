@@ -15,8 +15,7 @@ Please check http://outsideit.net/check-ms-win-tasks for more information on how
 
 ### Help
 
-If happen to find a bug, please create an issue on GitHub. Please include console's output and reproduction 
-step in your bug report. 
+In case you find a bug or have a feature request, please make an issue on GitHub. 
 
 ### On Nagios Exchange
 
