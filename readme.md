@@ -5,6 +5,12 @@
 Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks  
 with name, author, exit code and performance data to Nagios.
 
+### Screenshots
+
+![Tasks 01](/../screenshots/check-ms-win-task-graph-01.png?raw=true "check-ms-win-task-graph-01")
+
+![Tasks 02](/../screenshots/check-ms-win-task-graph-02.png?raw=true "check-ms-win-task-graph-02")
+
 ### Status
 
 Production ready. 
