@@ -17,7 +17,7 @@ Production ready.
 
 ### How To
 
-Please check http://outsideit.net/check-ms-win-tasks for more information on how to use this plugin.
+Please check https://outsideit.net/check-ms-win-tasks for more information on how to use this plugin.
 
 ### Help
 
@@ -25,7 +25,7 @@ In case you find a bug or have a feature request, please make an issue on GitHub
 
 ### On Nagios Exchange
 
-http://exchange.nagios.org/directory/Plugins/Operating-Systems/Windows/NRPE/Check-Windows-2008-or-Higher-Scheduled-Tasks/details
+https://exchange.nagios.org/directory/Plugins/Operating-Systems/Windows/NRPE/Check-Microsoft-Windows-Scheduled-Tasks/details
 
 ### Copyright
 
