@@ -1,5 +1,5 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v5.15.160728
+# Version:      v5.16.161118
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
@@ -7,7 +7,6 @@
 # On Github:    https://github.com/willemdh/check_ms_win_tasks
 # On OutsideIT: https://outsideit.net/check-ms-win-tasks
 # Recent History:
-#   08/01/16 => Added check for '0x00041325' to $Struct.TasksOk
 #   12/02/16 => Added Write-Log
 #   11/06/16 => Added hidden parameter, set to 1 to include hidden tasks
 #   14/06/16 => Improved spacing and structure
@@ -361,16 +360,16 @@ Function Write-Help {
 check_ms_win_tasks.ps1: This script is designed to check Windows 2008 or higher scheduled tasks and alert in case tasks
     failed in Nagios style output.
 Arguments:
-    -H   | --Hostname    => Optional hostname of remote system, default is localhost, not yet tested on remote host.
-    -EF  | --ExclFolders => Name of folders to exclude from monitoring.
-    -IF  | --InclFolders => Name of folders to include in monitoring.
-    -ET  | --ExclTasks   => Name of task patterns to exclude from monitoring.
-    -IT  | --InclTasks   => Name of task patterns to include in monitoring.
-    -Hid | --Hidden      => Switch to determine if hidden tasks need to be excluded.
+    -H   | --Hostname        => Optional hostname of remote system, default is localhost, not yet tested on remote host.
+    -EF  | --ExclFolders     => Name of folders to exclude from monitoring.
+    -IF  | --InclFolders     => Name of folders to include in monitoring.
+    -ET  | --ExclTasks       => Name of task patterns to exclude from monitoring.
+    -IT  | --InclTasks       => Name of task patterns to include in monitoring.
+    -Hid | --Hidden          => Switch to determine if hidden tasks need to be excluded.
     -a   | --AlertOnDisabled => If any tasks are disabled, throw a CRITICAL alert.
-    -w   | --Warning     => Threshold for warning alert. (not yet implemented)
-    -c   | --Critical    => Threshold for critical alert. (not yet implemented)
-    -h   | --Help        => Print this help output.
+    -w   | --Warning         => Threshold for warning alert. (not yet implemented)
+    -c   | --Critical        => Threshold for critical alert. (not yet implemented)
+    -h   | --Help            => Print this help output.
 "@
     Exit $Struct.ExitCode;
 } 
