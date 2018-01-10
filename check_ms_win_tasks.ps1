@@ -1,17 +1,11 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v6.01.170110
+# Version:      v6.02.180110
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
 #               with name, author, exit code and performance data to Nagios.
 # On Github:    https://github.com/willemdh/check_ms_win_tasks
 # On OutsideIT: https://outsideit.net/check-ms-win-tasks
-# Recent History:
-#   11/06/16 => Added hidden parameter, set to 1 to include hidden tasks
-#   14/06/16 => Improved spacing and structure
-#   28/07/16 => GuestName bugfixe and better IF and EF regex
-#   18/11/16 => Disabled tasks (Aaron Gorka)
-#   10/01/17 => Major optimizations
 # Copyright:
 #   This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed 
@@ -459,7 +453,9 @@ Function Select-TaskInfo {
             'Cmd' = ([xml]$InputObject.xml).Task.Actions.Exec.Command 
             'Params' = ([xml]$InputObject.xml).Task.Actions.Exec.Arguments
             }
-        If ( $ObjTask.LastTaskResult -eq '0'-or $ObjTask.LastTaskResult -eq '0x00041325' -and $ObjTask.Enabled ) {
+        If ( $ObjTask.LastTaskResult -eq '0'-or $ObjTask.LastTaskResult -eq '0x00041325' -or $ObjTask.LastTaskResult -eq '0x00041306' -or $ObjTask.LastRunTime -lt (get-date 2000-01-01) -and $ObjTask.Enabled ) {
+# 0x00041325 => The Task Scheduler service has asked the task to run
+# 0x00041306 => The last run of the task was terminated by the user
             If ( ! $Struct.InclTasks ) {
                 If ( ! ( Compare-Array -Str $ObjTask.Name -Patterns $Struct.ExclTasks ) ) {
                     $Struct.TasksOk += 1
@@ -471,7 +467,9 @@ Function Select-TaskInfo {
                 }
             }
         }
-        ElseIf ( $ObjTask.LastTaskResult -eq '0x00041301' -and $ObjTask.Enabled ) {
+        ElseIf ( $ObjTask.LastTaskResult -eq '0x8004131F'-or $ObjTask.LastTaskResult -eq '0x00041301' -and $ObjTask.Enabled ) {
+# 0x00041301 => The task is currently running
+# 0x8004131F => An instance of this task is already running.
             If ( ! $Struct.InclTasks ) {
                 If ( ! ( Compare-Array -Str $ObjTask.Name -Patterns $Struct.ExclTasks ) ) {
                     $Struct.RunningTasks += $ObjTask
