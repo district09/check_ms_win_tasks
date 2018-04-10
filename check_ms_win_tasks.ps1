@@ -403,7 +403,7 @@ Function Search-Tasks {
                 $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Last runtime: {2})}} " -f $DisabledTask.Name, $DisabledTask.Author, $DisabledTask.lastruntime)
             }
         }
-        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
+        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;1;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
         $Struct.ExitCode = 2
     }
     Elseif (( $Struct.AlertOnDisabled -eq $True ) -and ( $Struct.TasksDisabled -gt 0 )) {
@@ -411,7 +411,7 @@ Function Search-Tasks {
         ForEach ( $DisabledTask in $Struct.DisabledTasks ) {
             $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Last runtime: {2})}} " -f $DisabledTask.Name, $DisabledTask.Author, $DisabledTask.lastruntime)
         }
-        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
+        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;1;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
         $Struct.ExitCode = 2
     }
     Else {
@@ -422,7 +422,7 @@ Function Search-Tasks {
                 $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
             }
         }
-        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
+        $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;1;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
         $Struct.ExitCode = 0
     }
     Write-Host ('{0}' -f $outputString)
