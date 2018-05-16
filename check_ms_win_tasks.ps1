@@ -1,5 +1,5 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v7.01.180410
+# Version:      v7.03.180516
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
@@ -39,6 +39,9 @@ $Struct = New-Object -TypeName PSObject -Property @{
   AlertOnDisabled = [bool]$False
   FullPath = [bool]$False
   OutputString = [string]'Unknown: Error processing, no data returned.'
+  WarningTreshold =  [int]0
+  CriticalTreshold = [int]0
+  LastExec = [bool]$false                    
 }
 
 #region Functions
@@ -285,6 +288,9 @@ Function Initialize-Args {
         '^(-h|--Help)$' {
           Write-Help
         }
+        '^(-LE|--LastExec)$' {
+          $Struct.LastExec = $True
+        }
         default {
           Throw ('Illegal arguments detected: {0}' -f $_)
         }
@@ -373,6 +379,7 @@ Arguments:
   -w   | --Warning         => Threshold for warning alert. (not yet implemented)
   -c   | --Critical        => Threshold for critical alert. (not yet implemented)
   -h   | --Help            => Print this help output.
+  -LE  | --LastExec        => check if last execution is >warn or >critical in hours                                                                            
 '@
     Exit $Struct.ExitCode
 } 
@@ -408,7 +415,7 @@ Function Search-Tasks {
       }
     }
     If ( $Struct.TasksRunning -gt '0' ) {
-      $OutputString += ('{0} / {1} tasksTEST still running! ' -f $Struct.TasksRunning, $Struct.TasksTotal)
+      $OutputString += ('{0} / {1} tasks still running! ' -f $Struct.TasksRunning, $Struct.TasksTotal)
       ForEach ( $RunningTask in $Struct.RunningTasks ) {
         If ( $Struct.FullPath -eq $False ) {
           $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
@@ -446,7 +453,7 @@ Function Search-Tasks {
     $Struct.ExitCode = 2
   }
   Else {
-    $OutputString +=  ('{0} / {1} tasks ran succesfully. ' -f $Struct.TasksOk, $Struct.TasksTotal)
+    $OutputString +=  ('{0} / {1} tasks ran successfully. ' -f $Struct.TasksOk, $Struct.TasksTotal)
     If ($Struct.TasksRunning -gt '0') {
       $OutputString += ('{0} / {1} tasks still running! ' -f $Struct.TasksRunning, $Struct.TasksTotal)
       ForEach ($RunningTask in $Struct.RunningTasks) {
@@ -485,7 +492,33 @@ Function Select-TaskInfo {
       'Cmd' = ([xml]$InputObject.xml).Task.Actions.Exec.Command 
       'Params' = ([xml]$InputObject.xml).Task.Actions.Exec.Arguments
     }
-    If ( $ObjTask.LastTaskResult -eq '0'-or $ObjTask.LastTaskResult -eq '0x00041325' -or $ObjTask.LastTaskResult -eq '0x00041306' -or $ObjTask.LastRunTime -lt (get-date 2000-01-01) -and $ObjTask.Enabled ) {
+    #setting up things to handle last execution for now checking unit is hour
+    If ($Struct.LastExec -eq $true) {	
+      $lastExecWarn = (get-date).addHours(-$Struct.WarningTreshold)
+      $lastExecCrit = (get-date).addHours(-$Struct.CriticalTreshold)
+    }
+    #emit warning if last task execution too old
+    If ( $ObjTask.LastRunTime -lt $lastExecWarn) {
+      If ($ObjTask.LastRunTime -lt $lastExecCrit) {
+        #write-host 'Task ' + $ObjTask.name + ' : CRITICAL'
+      }
+      Else {
+        #write-host 'Task ' + $ObjTask.name + ' : WARNING'
+      }
+      If ( ! $Struct.InclTasks ) {
+        If ( ! ( Compare-Array -Str $ObjTask.Name -Patterns $Struct.ExclTasks ) ) {
+          $Struct.BadTasks += $ObjTask
+          $Struct.TasksNotOk += 1
+        }
+      }
+      Else {
+        If ( Compare-Array -Str $ObjTask.Name -Patterns $Struct.InclTasks ) {
+          $Struct.BadTasks += $ObjTask
+          $Struct.TasksNotOk += 1
+        }
+      }
+    }
+    ElseIf ( $ObjTask.LastTaskResult -eq '0'-or $ObjTask.LastTaskResult -eq '0x00041325' -or $ObjTask.LastTaskResult -eq '0x00041306' -or $ObjTask.LastRunTime -lt (get-date 2000-01-01) -and $ObjTask.Enabled ) {
 # 0x00041325 => The Task Scheduler service has asked the task to run
 # 0x00041306 => The last run of the task was terminated by the user
       If ( ! $Struct.InclTasks ) {
