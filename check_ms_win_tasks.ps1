@@ -1,5 +1,5 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v7.03.180516
+# Version:      v7.04.190321
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
@@ -24,6 +24,8 @@ $Struct = New-Object -TypeName PSObject -Property @{
   InclFolders = [string[]]@()
   ExclTasks = [string[]]@()
   InclTasks = [string[]]@()
+  ExclAuthors = [string[]]@()
+  InclAuthors = [string[]]@()
   FolderRef = [string]''
   AllValidFolders = [string[]]@()
   ExitCode = [int]3
@@ -252,12 +254,34 @@ Function Initialize-Args {
           }
           $i++
         }
+        '^(-EA|--ExclAuthors)$' {
+          If ($Value.Count -ge 2) {
+            ForEach ($Item in $Value) {
+                $Struct.ExclAuthors += $Item
+            }
+          }
+          Else {
+            $Struct.ExclAuthors = $Value 
+          }
+          $i++
+        }
+        '^(-IA|--InclAuthors)$' {
+          If ($Value.Count -ge 2) {
+            ForEach ($Item in $Value) {
+              $Struct.InclAuthors += $Item
+            }
+          }
+          Else {
+            $Struct.InclAuthors = $Value 
+          }
+          $i++
+        }
         '^(-Hid|--Hidden)$' {
           If ($value -match '^[0-1]{1}$') {
             $Struct.hidden = $Value
           }
           Else {
-           Throw ("Method `"{0}`" does not meet regex requirements." -f $value)
+            Throw ("Method `"{0}`" does not meet regex requirements." -f $value)
           }
           $i++
         }
@@ -373,6 +397,8 @@ Arguments:
   -IF  | --InclFolders     => Name of folders to include in monitoring.
   -ET  | --ExclTasks       => Name of task patterns to exclude from monitoring.
   -IT  | --InclTasks       => Name of task patterns to include in monitoring.
+  -EA  | --ExclAuthors     => Name of task author patterns to exclude from monitoring.
+  -IA  | --InclAuthors      => Name of task author patterns to include in monitoring.
   -Hid | --Hidden          => Switch to determine if hidden tasks need to be excluded.
   -a   | --AlertOnDisabled => If any tasks are disabled, throw a CRITICAL alert.
   -FP  | --FullPath        => Displays full path in plugin output
@@ -381,7 +407,7 @@ Arguments:
   -h   | --Help            => Print this help output.
   -LE  | --LastExec        => check if last execution is >warn or >critical in hours                                                                            
 '@
-    Exit $Struct.ExitCode
+  Exit $Struct.ExitCode
 } 
 Function Search-Tasks { 
   Try {
@@ -400,6 +426,16 @@ Function Search-Tasks {
   $OutputString = ''
   ForEach ($Folder in $Struct.AllValidFolders) {
     If (($Tasks = $Folder.GetTasks($Struct.Hidden))) {
+      foreach ($Author in $Struct.ExclAuthors) {
+        $Tasks = $Tasks | ? {([xml]($_.xml)).Task.RegistrationInfo.Author -notlike $Author}
+      }
+      if ($Struct.InclAuthors) {
+        $NewTasks = @()
+        foreach ($Author in $Struct.InclAuthors) {
+          $newTasks += $Tasks | ? {([xml]($_.xml)).Task.RegistrationInfo.Author -like $Author}
+        }
+        $Tasks = $NewTasks | Select -Unique
+      }
       $Tasks | Select-TaskInfo
     }
   } 
