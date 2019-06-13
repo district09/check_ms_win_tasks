@@ -1,5 +1,5 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v7.04.190321
+# Version:      v7.05.190623
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
@@ -434,7 +434,7 @@ Function Search-Tasks {
         foreach ($Author in $Struct.InclAuthors) {
           $newTasks += $Tasks | ? {([xml]($_.xml)).Task.RegistrationInfo.Author -like $Author}
         }
-        $Tasks = $NewTasks | Select -Unique
+        $Tasks = $NewTasks | Select * -Unique
       }
       $Tasks | Select-TaskInfo
     }
