@@ -1,5 +1,5 @@
 # Script name:  check_ms_win_tasks.ps1
-# Version:      v7.05.190623
+# Version:      v7.06.191031
 # Created on:   01/02/2014
 # Author:       Willem D'Haese
 # Purpose:      Checks Microsoft Windows enabled scheduled tasks excluding defined folders and task patterns, returning state of tasks
@@ -568,9 +568,10 @@ Function Select-TaskInfo {
         }
       }
     }
-    ElseIf ( $ObjTask.LastTaskResult -eq '0x8004131F'-or $ObjTask.LastTaskResult -eq '0x00041301' -and $ObjTask.Enabled ) {
+    ElseIf ( $ObjTask.LastTaskResult -eq '0x8004131F' -or $ObjTask.LastTaskResult -eq '0x00041301' -or $ObjTask.LastTaskResult -eq '0x800710E0' -and $ObjTask.Enabled ) {
 # 0x00041301 => The task is currently running
-# 0x8004131F => An instance of this task is already running.
+# 0x8004131F => An instance of this task is already running
+# 0x800710E0 => The operator or administrator has refused the request
       If ( ! $Struct.InclTasks ) {
         If ( ! ( Compare-Array -Str $ObjTask.Name -Patterns $Struct.ExclTasks ) ) {
           $Struct.RunningTasks += $ObjTask
