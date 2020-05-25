@@ -41,6 +41,8 @@ $Struct = New-Object -TypeName PSObject -Property @{
   AlertOnDisabled = [bool]$False
   FullPath = [bool]$False
   OutputString = [string]'Unknown: Error processing, no data returned.'
+  TemplateStringFailed = [string]'{{Taskname: "{0}" (Author: {1})(Last runtime: {2})(Exitcode: {3})}} '
+  TemplateStringDisabled = [string]'{{Taskname: "{0}" (Author: {1})(Last runtime: {2})}} '
   WarningTreshold =  [int]0
   CriticalTreshold = [int]0
   LastExec = [bool]$false                    
@@ -309,6 +311,14 @@ Function Initialize-Args {
         '^(-FP|--FullPath)$' {
           $Struct.FullPath = $True
         }
+        '^(--TemplateStringFailed)$' {
+          $Struct.TemplateStringFailed = $Value
+          $i++
+        }
+        '^(--TemplateStringDisabled)$' {
+          $Struct.TemplateStringDisabled = $Value
+          $i++
+        }
         '^(-h|--Help)$' {
           Write-Help
         }
@@ -398,12 +408,14 @@ Arguments:
   -ET  | --ExclTasks       => Name of task patterns to exclude from monitoring.
   -IT  | --InclTasks       => Name of task patterns to include in monitoring.
   -EA  | --ExclAuthors     => Name of task author patterns to exclude from monitoring.
-  -IA  | --InclAuthors      => Name of task author patterns to include in monitoring.
+  -IA  | --InclAuthors     => Name of task author patterns to include in monitoring.
   -Hid | --Hidden          => Switch to determine if hidden tasks need to be excluded.
   -a   | --AlertOnDisabled => If any tasks are disabled, throw a CRITICAL alert.
   -FP  | --FullPath        => Displays full path in plugin output
   -w   | --Warning         => Threshold for warning alert. (not yet implemented)
   -c   | --Critical        => Threshold for critical alert. (not yet implemented)
+       | --TemplateStringFailed    => Template string used for format failed tasks
+       | --TemplateStringDisabled  => Template string used for format disabled tasks
   -h   | --Help            => Print this help output.
   -LE  | --LastExec        => check if last execution is >warn or >critical in hours                                                                            
 '@
@@ -444,20 +456,20 @@ Function Search-Tasks {
     $OutputString += ('{0} / {1} tasks failed! ' -f $Struct.TasksNotOk, $Struct.TasksTotal)
     ForEach ($BadTask in $Struct.BadTasks) {
       If ( $Struct.FullPath -eq $False ) {
-              $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $BadTask.Name, $BadTask.Author, $BadTask.lasttaskresult, $BadTask.lastruntime)
+              $OutputString += ($Struct.TemplateStringFailed -f $BadTask.Name, $BadTask.Author, $BadTask.lastruntime, $BadTask.lasttaskresult)
       }
       Else {
-        $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $BadTask.Path, $BadTask.Author, $BadTask.lasttaskresult, $BadTask.lastruntime)
+        $OutputString += ($Struct.TemplateStringFailed -f $BadTask.Path, $BadTask.Author, $BadTask.lastruntime, $BadTask.lasttaskresult)
       }
     }
     If ( $Struct.TasksRunning -gt '0' ) {
       $OutputString += ('{0} / {1} tasks still running! ' -f $Struct.TasksRunning, $Struct.TasksTotal)
       ForEach ( $RunningTask in $Struct.RunningTasks ) {
         If ( $Struct.FullPath -eq $False ) {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringFailed -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lastruntime, $RunningTask.lasttaskresult)
         }
         Else {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Path, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringFailed -f $RunningTask.Path, $RunningTask.Author, $RunningTask.lastruntime, $RunningTask.lasttaskresult)
         }
       }
     }
@@ -465,10 +477,10 @@ Function Search-Tasks {
       $OutputString += ('{0} / {1} tasks disabled! ' -f $Struct.TasksDisabled, $Struct.TasksTotal)
       ForEach ( $DisabledTask in $Struct.DisabledTasks ) {
         If ( $Struct.FullPath -eq $False ) {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1}))(Last runtime: {2})}} " -f $DisabledTask.Name, $DisabledTask.Author, $DisabledTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringDisabled -f $DisabledTask.Name, $DisabledTask.Author, $DisabledTask.lastruntime)
         }
         Else {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Last runtime: {2})}} " -f $DisabledTask.Path, $DisabledTask.Author, $DisabledTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringDisabled -f $DisabledTask.Path, $DisabledTask.Author, $DisabledTask.lastruntime)
         }
       }
     }
@@ -479,10 +491,10 @@ Function Search-Tasks {
     $OutputString += ('{0} / {1} tasks disabled! ' -f $Struct.TasksDisabled, $Struct.TasksTotal)
     ForEach ( $DisabledTask in $Struct.DisabledTasks ) {
       If ( $Struct.FullPath -eq $False ) {
-        $OutputString += ("{{Taskname: `"{0}`" (Author: {1}))(Last runtime: {2})}} " -f $DisabledTask.Name, $DisabledTask.Author, $RunningTask.lastruntime)
+        $OutputString += ($Struct.TemplateStringDisabled -f $DisabledTask.Name, $DisabledTask.Author, $RunningTask.lastruntime)
       }
       Else {
-        $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Last runtime: {2})}} " -f $DisabledTask.Path, $DisabledTask.Author, $DisabledTask.lastruntime)
+        $OutputString += ($Struct.TemplateStringDisabled -f $DisabledTask.Path, $DisabledTask.Author, $DisabledTask.lastruntime)
       }
     }
     $OutputString +=  " | 'Total Tasks'=$($Struct.TasksTotal) 'OK Tasks'=$($Struct.TasksOk);;;0;$($Struct.TasksTotal) 'Failed Tasks'=$($Struct.TasksNotOk);;1;0;$($Struct.TasksTotal) 'Running Tasks'=$($Struct.TasksRunning);;;0;$($Struct.TasksTotal) 'Disabled Tasks'=$($Struct.TasksDisabled);;;0;$($Struct.TasksTotal)"
@@ -494,10 +506,10 @@ Function Search-Tasks {
       $OutputString += ('{0} / {1} tasks still running! ' -f $Struct.TasksRunning, $Struct.TasksTotal)
       ForEach ($RunningTask in $Struct.RunningTasks) {
         If ( $Struct.FullPath -eq $False ) {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringFailed -f $RunningTask.Name, $RunningTask.Author, $RunningTask.lastruntime, $RunningTask.lasttaskresult)
         }
         Else {
-          $OutputString += ("{{Taskname: `"{0}`" (Author: {1})(Exitcode: {2})(Last runtime: {3})}} " -f $RunningTask.Path, $RunningTask.Author, $RunningTask.lasttaskresult, $RunningTask.lastruntime)
+          $OutputString += ($Struct.TemplateStringFailed -f $RunningTask.Path, $RunningTask.Author, $RunningTask.lastruntime, $RunningTask.lasttaskresult)
         }
       }
     }
